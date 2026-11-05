@@ -1,0 +1,45 @@
+name: PHI-SIGINT 1D-CNN Verification & Benchmark CI
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  verify-and-benchmark:
+    name: Train 1D-CNN, Run Unit Tests & Verify HMGCC Benchmarks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PHI-sigint-fingerprint Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install CPU PyTorch & Scientific Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements.txt
+
+      - name: Train 1D-CNN on 10,000 Battlefield I/Q Chunks
+        run: |
+          python model/train.py
+
+      - name: Execute Unit & PHI-GUARD Bridge Integration Tests
+        run: |
+          python -m unittest discover -s tests -p "test_*.py" -v
+
+      - name: Run Monte Carlo SNR Sweep & Crowded Spectrum Benchmarks
+        run: |
+          python benchmarks/run_benchmarks.py
+
+      - name: Verify Real-Time Interdiction Stream (10 Frames)
+        run: |
+          python main.py --mode stream --steps 10 --interval 0.05

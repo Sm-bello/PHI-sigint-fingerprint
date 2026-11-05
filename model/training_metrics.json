@@ -1,0 +1,180 @@
+{
+  "model_architecture": "RFClassifierCNN (3-Layer 1D-CNN + BatchNorm + AdaptiveAvgPool1d)",
+  "num_parameters": 51493,
+  "dataset_integrity": {
+    "total_generated": 10000,
+    "valid_samples": 10000,
+    "nan_rows_detected": 0,
+    "inf_rows_detected": 0,
+    "missing_target_rows": 0,
+    "class_distribution": {
+      "Background_Noise": 2000,
+      "Friendly_Comms": 2000,
+      "Hostile_MAVLink": 2000,
+      "Hostile_OcuSync": 2000,
+      "Jammer": 2000
+    },
+    "splits": {
+      "train_samples": 7000,
+      "val_samples": 1500,
+      "test_samples": 1500
+    }
+  },
+  "baselines": {
+    "naive_baseline": {
+      "accuracy": 0.2,
+      "macro_f1": 0.0667
+    },
+    "logistic_regression_baseline": {
+      "accuracy": 0.948,
+      "macro_f1": 0.9476
+    }
+  },
+  "test_accuracy": 1.0,
+  "test_macro_f1": 1.0,
+  "single_chunk_latency_ms": 0.5781,
+  "training_time_sec": 42.36,
+  "confusion_matrix": [
+    [
+      300,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      300,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      300,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      300,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      300
+    ]
+  ],
+  "class_names": [
+    "Background_Noise",
+    "Friendly_Comms",
+    "Hostile_MAVLink",
+    "Hostile_OcuSync",
+    "Jammer"
+  ],
+  "per_class_metrics": {
+    "Background_Noise": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    "Friendly_Comms": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    "Hostile_MAVLink": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    "Hostile_OcuSync": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    "Jammer": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    }
+  },
+  "epoch_history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.186,
+      "train_acc": 0.9634,
+      "val_loss": 0.01919,
+      "val_acc": 1.0
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.01006,
+      "train_acc": 0.9994,
+      "val_loss": 0.00637,
+      "val_acc": 1.0
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.00678,
+      "train_acc": 0.9991,
+      "val_loss": 0.00234,
+      "val_acc": 1.0
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.00418,
+      "train_acc": 0.9996,
+      "val_loss": 0.00162,
+      "val_acc": 1.0
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.00215,
+      "train_acc": 1.0,
+      "val_loss": 0.00194,
+      "val_acc": 1.0
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.00164,
+      "train_acc": 1.0,
+      "val_loss": 0.00067,
+      "val_acc": 1.0
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.00107,
+      "train_acc": 1.0,
+      "val_loss": 0.0006,
+      "val_acc": 1.0
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.00099,
+      "train_acc": 1.0,
+      "val_loss": 0.00056,
+      "val_acc": 1.0
+    },
+    {
+      "epoch": 9,
+      "train_loss": 0.00104,
+      "train_acc": 1.0,
+      "val_loss": 0.00057,
+      "val_acc": 1.0
+    },
+    {
+      "epoch": 10,
+      "train_loss": 0.00089,
+      "train_acc": 1.0,
+      "val_loss": 0.00056,
+      "val_acc": 1.0
+    }
+  ]
+}

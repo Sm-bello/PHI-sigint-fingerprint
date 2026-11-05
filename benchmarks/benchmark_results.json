@@ -1,0 +1,48 @@
+{
+  "campaign": "HMGCC Crowded Battlefield RF Classification Benchmark",
+  "samples_per_snr": 500,
+  "snr_robustness_curve": {
+    "-10_dB": {
+      "snr_db": -10.0,
+      "accuracy": 0.488,
+      "macro_f1": 0.4117
+    },
+    "-5_dB": {
+      "snr_db": -5.0,
+      "accuracy": 0.992,
+      "macro_f1": 0.992
+    },
+    "+0_dB": {
+      "snr_db": 0.0,
+      "accuracy": 1.0,
+      "macro_f1": 1.0
+    },
+    "+5_dB": {
+      "snr_db": 5.0,
+      "accuracy": 1.0,
+      "macro_f1": 1.0
+    },
+    "+10_dB": {
+      "snr_db": 10.0,
+      "accuracy": 1.0,
+      "macro_f1": 1.0
+    },
+    "+15_dB": {
+      "snr_db": 15.0,
+      "accuracy": 1.0,
+      "macro_f1": 1.0
+    },
+    "+20_dB": {
+      "snr_db": 20.0,
+      "accuracy": 1.0,
+      "macro_f1": 1.0
+    }
+  },
+  "operational_kpis": {
+    "evaluation_frames": 1000,
+    "probability_of_detection_pd": 1.0,
+    "false_alarm_rate_far": 0.0,
+    "mean_inference_latency_ms": 1.9072,
+    "throughput_chunks_per_sec": 524.3
+  }
+}
