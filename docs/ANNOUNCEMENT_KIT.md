@@ -39,7 +39,10 @@ When a Hostile_MAVLink, Hostile_OcuSync, or EW Jammer emitter is detected with >
 Explore the full code, 1D-CNN training pipeline, Monte Carlo SNR benchmarks (-10 dB to +20 dB), and C4I Terminal HUD here:
 🔗 GitHub: https://github.com/Sm-bello/PHI-sigint-fingerprint
 
-#DefenceTech #SIGINT #ElectronicWarfare #CounterUAS #PyTorch #DeepLearning #SDR #HMGCC #Aerospace #CyberPhysicalSystems #UKDefence
+🌍 Institutional Acknowledgement:
+Gratefully developed with the visionary leadership and technical sponsorship of DIMASA (Digital Intelligence Maintenance for Aircraft Systems in Africa) and the Physics Hybrid Integrity Lab.
+
+#DefenceTech #SIGINT #ElectronicWarfare #CounterUAS #PyTorch #DeepLearning #SDR #HMGCC #Aerospace #CyberPhysicalSystems #UKDefence #DIMASA
 ```
 
 ---

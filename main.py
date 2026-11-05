@@ -21,7 +21,7 @@ import argparse
 import sys
 import time
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Dict, Any, List, Optional
 
 ROOT_DIR = Path(__file__).resolve().parent
 if str(ROOT_DIR) not in sys.path:
@@ -42,8 +42,16 @@ from inference.live_classifier import (
 )
 
 
-def _render_psd_sparkline(psd_bars_dbm, width: int = 32) -> str:
-    """Renders a compact Unicode spectral density sparkline across the sampled RF band."""
+def _render_psd_sparkline(psd_bars_dbm: List[float], width: int = 32) -> str:
+    """Renders a compact Unicode spectral density sparkline across the sampled RF band.
+
+    Args:
+        psd_bars_dbm (List[float]): Downsampled Power Spectral Density values in dBm.
+        width (int, optional): Number of character bins to render. Defaults to 32.
+
+    Returns:
+        str: Unicode block sparkline string representing relative spectral power across the band.
+    """
     blocks = " ▂▃▄▅▆▇█"
     lo, hi = -95.0, -35.0
     chars = []
@@ -55,9 +63,18 @@ def _render_psd_sparkline(psd_bars_dbm, width: int = 32) -> str:
 
 
 def run_stream_orchestrator(max_steps: Optional[int] = None, interval_sec: float = 0.85) -> None:
-    """
-    Runs the master real-time RF classifier stream and triggers PHI-GUARD interdiction
-    whenever a Hostile_MAVLink or Hostile_OcuSync emitter is classified with >80% confidence.
+    """Runs the master real-time RF classifier stream and triggers PHI-GUARD interdiction.
+
+    Continuously pulls `(2, 1024)` complex baseband I/Q frames, evaluates them with the
+    trained 1D-CNN (`RFClassifierCNN`), prints live PSD sparklines and classification telemetry,
+    and emits a high-visibility RED interdiction banner whenever a `Hostile_MAVLink` or
+    `Hostile_OcuSync` emitter is identified with `>80%` Softmax confidence.
+
+    Args:
+        max_steps (Optional[int], optional): Maximum number of frames to process before
+            returning. If `None`, runs indefinitely until `KeyboardInterrupt`. Defaults to None.
+        interval_sec (float, optional): Delay in seconds between consecutive frames.
+            Defaults to 0.85.
     """
     classifier = LiveClassifier(auto_train_if_missing=True, enable_phi_guard_bridge=True)
 
@@ -114,7 +131,7 @@ def run_stream_orchestrator(max_steps: Optional[int] = None, interval_sec: float
                 print(
                     f"\n{ANSI_YELLOW}{ANSI_BOLD}"
                     f"  [!!!] HOSTILE RF EMITTER DETECTED - INITIATING PHI-GUARD INTERDICTION !!! "
-                    f"(EW JAMMER -> {bridge_ev['interdiction_directive']} | PACE #{bridge_ev['pace_block_height']})"
+                    f"(EW JAMMER -> {bridge_ev['interdiction_directive']} | PACE #{bridge_ev['pace_block_height']:04d})"
                     f"{ANSI_RESET}\n"
                 )
 
@@ -125,7 +142,16 @@ def run_stream_orchestrator(max_steps: Optional[int] = None, interval_sec: float
 
 
 def _build_hud_renderable(last_res: Dict[str, Any], classifier: LiveClassifier):
-    """Constructs a flicker-free Rich C4I SIGINT HUD matching the PHI-GUARD cockpit aesthetic."""
+    """Constructs a flicker-free Rich C4I SIGINT HUD matching the PHI-GUARD cockpit aesthetic.
+
+    Args:
+        last_res (Dict[str, Any]): Dictionary containing the latest frame classification,
+            Softmax probabilities, spectral metrics, and `PhiGuardBridge` event telemetry.
+        classifier (LiveClassifier): Active `LiveClassifier` instance tracking cumulative statistics.
+
+    Returns:
+        rich.console.Group: Renderable Rich layout group containing header, telemetry table, and alert ticker.
+    """
     from rich.console import Group
     from rich.panel import Panel
     from rich.table import Table
@@ -225,7 +251,14 @@ def _build_hud_renderable(last_res: Dict[str, Any], classifier: LiveClassifier):
 
 
 def run_hud_orchestrator(max_steps: Optional[int] = None, interval_sec: float = 0.65) -> None:
-    """Runs the flicker-free Rich Live C4I SIGINT HUD."""
+    """Runs the flicker-free Rich Live C4I SIGINT HUD in the terminal.
+
+    Args:
+        max_steps (Optional[int], optional): Number of frames to render before exiting.
+            Defaults to None (continuous loop).
+        interval_sec (float, optional): Refresh interval in seconds between simulated RF frames.
+            Defaults to 0.65.
+    """
     from rich.console import Console
     from rich.live import Live
 
@@ -246,6 +279,7 @@ def run_hud_orchestrator(max_steps: Optional[int] = None, interval_sec: float = 
 
 
 def main() -> None:
+    """Parses command-line arguments and dispatches the selected execution mode."""
     parser = argparse.ArgumentParser(
         description="PHI-RF-CLASSIFIER: HMGCC 1D-CNN Battlefield RF Classifier & PHI-GUARD Bridge"
     )

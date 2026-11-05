@@ -4,6 +4,7 @@
 [![TRL Status](https://img.shields.io/badge/TRL-4%20%2F%20Edge--of--5-blue.svg)](#)
 [![PyTorch](https://img.shields.io/badge/PyTorch-1D--CNN-ee4c2c.svg)](#)
 [![PACE Compliant](https://img.shields.io/badge/Forensics-UK%20PACE%20SHA256%2BHMAC-success.svg)](#)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 **`phi-rf-classifier`** is a real-time **Physical-Layer (PHY) AI SIGINT & RF Emitter Classification Engine** engineered for the **HMGCC Challenge**: *"identifying RF emitters within a crowded and complex electromagnetic environment."*
 
@@ -44,8 +45,12 @@ flowchart LR
 phi-rf-classifier/
 ├── .github/workflows/
 │   └── ci.yml                             # Automated PyTorch Training, Unit Tests & SNR Benchmark CI
+├── LICENSE                                # MIT Open-Source / Defence Evaluation License
+├── CONTRIBUTING.md                        # Collaboration, PR & Phase 2 SDR Dataset Guidelines
 ├── requirements.txt                       # PyTorch, NumPy, Scikit-Learn, SciPy, Rich
 ├── README.md                              # Architecture, Empirical Benchmarks & Launch Guide
+├── Start-SIGINT-HUD.bat                   # One-click Windows launcher for Rich C4I Cockpit HUD
+├── Start-SIGINT-Stream.bat                # One-click Windows launcher for Real-Time Stream Mode
 ├── simulator/
 │   ├── __init__.py
 │   └── spectrum_generator.py              # Crowded battlefield I/Q synthesizer (5 classes + PSD/RSSI/Entropy)
@@ -183,8 +188,33 @@ python -m unittest discover -s tests -p "test_*.py" -v
 
 ---
 
+## 🔬 Synthetic Data Fidelity Disclosure & Phase 2 Hardware Validation Roadmap
+
+- **Phase 1 (Current TRL-4 Software Breadboard — Physically Grounded Synthesis):**
+  All $I/Q$ waveforms in [`simulator/spectrum_generator.py`](simulator/spectrum_generator.py) are synthesized using **physically grounded mathematical baseband models** rather than arbitrary random arrays:
+  - **Thermal & Channel Physics:** Circularly symmetric complex Additive White Gaussian Noise ($\mathcal{CN}(0, \sigma^2)$), randomized carrier frequency offsets (CFO), uniform phase rotation $\phi_0 \in [0, 2\pi)$, path-loss dynamic range attenuation ($0.4\times$ to $1.6\times$), and co-channel multi-emitter superposition.
+  - **Authentic Modulation Structures:** Pulse-shaped QPSK (`Friendly_Comms`), continuous-phase Gaussian Frequency-Shift Keying ($BT = 0.5$) with mid-burst frequency hopping (`Hostile_MAVLink`), 64-subcarrier Inverse-FFT Orthogonal Frequency-Division Multiplexing with 16-sample Cyclic Prefix and root-25 Zadoff-Chu synchronization bursts (`Hostile_OcuSync`), and Solid-State Power Amplifier (SSPA) $\tanh$-compressed Linear Frequency Modulated (LFM) sawtooth chirps (`Jammer`).
+- **Phase 2 (TRL-5/6 Field Transition — Over-The-Air SDR Captures & Edge Deployment):**
+  Phase 2 transitions the trained `RFClassifierCNN` pipeline to **real Over-The-Air (OTA) SDR-captured $I/Q$ datasets** (SigMF format) collected via **RTL-SDR Blog V4**, **HackRF One**, and **Ettus Research USRP B210** front-ends across the $433/868/915\text{ MHz}$ and $2.4 / 5.8\text{ GHz}$ bands, paired with **ONNX Runtime / NVIDIA TensorRT FP16** quantization on **NVIDIA Jetson Orin Nano** edge modules. See [Section 5 of the HMGCC Technical Dossier](docs/HMGCC_TECHNICAL_DOSSIER.md) for the hardware interface specification.
+
+---
+
 ## 🔗 Documentation & Workflows
 - [**Joint `phi-rf-classifier` $\times$ `phi-guard` Operational Workflow**](workflows/PHI_GUARD_INTEGRATION_WORKFLOW.md)
 - [**HMGCC Challenge Technical & Mathematical Dossier**](docs/HMGCC_TECHNICAL_DOSSIER.md)
 - [**Public Visibility & Launch Announcement Kit**](docs/ANNOUNCEMENT_KIT.md)
+- [**Contributing & Phase 2 SDR Partnership Guide**](CONTRIBUTING.md)
+- [**MIT License**](LICENSE)
+
+---
+
+## 🌍 Institutional Acknowledgement & Attribution
+
+This research initiative and engineering testbed are made possible through the visionary leadership and technical sponsorship of:
+
+* **DIMASA (Digital Intelligence Maintenance for Aircraft Systems in Africa)**: For spearheading advanced aerospace digital twin methodologies, intelligent maintenance architectures, and autonomous flight vehicle technologies across the African continent.
+* **Physics Hybrid Integrity Lab**: For providing the laboratory computing infrastructure, numerical modeling testbeds, and academic oversight required to execute multi-fidelity physics simulations and TRL 4 verification campaigns.
+
+We gratefully hail the DIMASA initiative and the Physics Hybrid Integrity Lab team for championing sovereign, high-integrity aerospace simulation capabilities.
+
 
