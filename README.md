@@ -49,8 +49,13 @@ phi-rf-classifier/
 ├── CONTRIBUTING.md                        # Collaboration, PR & Phase 2 SDR Dataset Guidelines
 ├── requirements.txt                       # PyTorch, NumPy, Scikit-Learn, SciPy, Rich
 ├── README.md                              # Architecture, Empirical Benchmarks & Launch Guide
+├── Start-Web-Dashboard.bat                # One-click Windows launcher for Web C4I Dashboard (http://127.0.0.1:8080)
 ├── Start-SIGINT-HUD.bat                   # One-click Windows launcher for Rich C4I Cockpit HUD
 ├── Start-SIGINT-Stream.bat                # One-click Windows launcher for Real-Time Stream Mode
+├── dashboard/
+│   ├── __init__.py
+│   ├── app.py                             # Real-time multi-threaded HTTP/JSON API telemetry server
+│   └── index.html                         # Full-screen Military Tactical Web C4I Cockpit (Dual Online/Offline)
 ├── simulator/
 │   ├── __init__.py
 │   └── spectrum_generator.py              # Crowded battlefield I/Q synthesizer (5 classes + PSD/RSSI/Entropy)
@@ -108,19 +113,29 @@ Generates `10,000` crowded-spectrum `(2, 1024)` I/Q chunks, performs strict stra
 python model/train.py
 ```
 
-### 3. Run the Master Real-Time SIGINT Stream (`main.py`)
+### 3. Launch the Real-Time Web C4I Dashboard (Recommended Visual Interface)
+Hosts a local telemetry server connecting the live PyTorch 1D-CNN directly to an interactive, military-grade web cockpit at `http://127.0.0.1:8080/` (features live In-Phase/Quadrature oscillograms, phase-space constellation, 64-bin PSD waterfall, Softmax probability bars, and 600m PHI-GUARD intercept radar):
+```powershell
+# Run via CLI:
+python main.py --mode web
+
+# Or simply double-click Start-Web-Dashboard.bat in File Explorer!
+```
+*(Tip: You can also double-click `dashboard/index.html` directly in any web browser for instant offline demonstration without running Python!)*
+
+### 4. Run the Master Real-Time SIGINT Stream (`main.py`)
 Streams live classifications and fires the mandatory high-visibility **RED Interdiction Alert** (`[!!!] HOSTILE RF EMITTER DETECTED - INITIATING PHI-GUARD INTERDICTION !!!`) whenever `Hostile_MAVLink` or `Hostile_OcuSync` is detected with `>80%` confidence:
 ```powershell
 python main.py
 ```
 
-### 4. Launch the Flicker-Free Rich C4I Cockpit HUD
+### 5. Launch the Flicker-Free Rich C4I Cockpit HUD
 Renders an in-place military command cockpit (`rich.live.Live`) with a 32-bin Unicode Power Spectral Density (PSD) bar analyzer, Softmax probability distribution, `PHI-GUARD` Interceptor state (`S0_IDLE_MONITORING` $\to$ `S6_TOW_CONTAINMENT`), and live UK PACE SHA-256 block hashes:
 ```powershell
 python main.py --mode hud
 ```
 
-### 5. Run the Monte Carlo SNR Sweep & Unit Tests
+### 6. Run the Monte Carlo SNR Sweep & Unit Tests
 ```powershell
 python main.py --mode benchmark
 python -m unittest discover -s tests -p "test_*.py" -v

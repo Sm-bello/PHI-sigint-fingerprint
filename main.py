@@ -8,6 +8,9 @@ Modes:
   - Stream Mode (Default): `python main.py` or `python main.py --mode stream`
       Real-time terminal telemetry stream with massive RED interdiction alerts:
       `[!!!] HOSTILE RF EMITTER DETECTED - INITIATING PHI-GUARD INTERDICTION !!!`
+  - Web C4I Dashboard    : `python main.py --mode web`
+      Launches real-time browser-based military tactical cockpit with live I/Q oscillograms,
+      polar constellation, 64-bin PSD waterfall, Softmax bars, and circular intercept radar.
   - Rich C4I HUD Mode    : `python main.py --mode hud`
       Flicker-free Rich Live Military SIGINT Cockpit with 32-bin PSD spectrum bar chart,
       1D-CNN Softmax probability bars, PHI-GUARD S0-S6 Interceptor state, and PACE ledger.
@@ -285,9 +288,9 @@ def main() -> None:
     )
     parser.add_argument(
         "--mode",
-        choices=["stream", "hud", "train", "benchmark"],
+        choices=["stream", "hud", "web", "train", "benchmark"],
         default="stream",
-        help="Execution mode: 'stream' (default CLI), 'hud' (Rich C4I Cockpit), 'train', or 'benchmark'",
+        help="Execution mode: 'stream' (default CLI), 'hud' (Rich C4I Cockpit), 'web' (Browser C4I Dashboard), 'train', or 'benchmark'",
     )
     parser.add_argument(
         "--steps",
@@ -301,9 +304,18 @@ def main() -> None:
         default=0.85,
         help="Update interval in seconds between I/Q frames (default: 0.85s)",
     )
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=8080,
+        help="HTTP port for '--mode web' dashboard (default: 8080)",
+    )
     args = parser.parse_args()
 
-    if args.mode == "train":
+    if args.mode == "web":
+        from dashboard.app import start_server
+        start_server(port=args.port)
+    elif args.mode == "train":
         from model.train import train_model
         train_model()
     elif args.mode == "benchmark":

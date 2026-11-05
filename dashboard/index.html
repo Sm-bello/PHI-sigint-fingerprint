@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PHI-RF-CLASSIFIER | Sovereign AI SIGINT & C4I Tactical Dashboard</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    /* Custom cyber-tactical styling */
+    :root {
+      --bg-dark: #0a0e17;
+      --card-dark: #111827;
+      --border-dark: #1f2937;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+    }
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .grid-lines {
+      background-image: linear-gradient(rgba(31, 41, 55, 0.4) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(31, 41, 55, 0.4) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+  </style>
+</head>
+<body class="antialiased p-3 sm:p-5 select-none min-h-screen">
+  <div class="max-w-7xl mx-auto space-y-3.5">
+
+    <!-- Top Master Header -->
+    <header class="bg-slate-900/90 backdrop-blur border border-slate-800 rounded-xl p-4 shadow-lg flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <span id="livePulseDot" class="w-3.5 h-3.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_12px_#10b981]"></span>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base sm:text-lg font-bold tracking-tight text-white flex items-center gap-2">
+              <span class="text-sky-400">PHI-RF-CLASSIFIER</span>
+              <span class="text-slate-500 font-normal">|</span>
+              <span class="text-slate-200">Sovereign 1D-CNN AI SIGINT &amp; C4I Cockpit</span>
+            </h1>
+            <span id="backendBadge" class="text-[11px] font-mono font-semibold px-2 py-0.5 rounded bg-sky-950 text-sky-400 border border-sky-800">
+              PYTORCH ENGINE
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 mt-0.5">
+            Real-Time In-Phase/Quadrature Baseband (2&times;1024 @ 1 MS/s) &bull; Sub-ms 1D-CNN Inference &bull; PHI-GUARD C4I Defense &bull; UK PACE Forensics
+          </p>
+        </div>
+      </div>
+
+      <!-- Tactical Signal Injector Controls -->
+      <div class="flex flex-wrap items-center gap-1.5">
+        <button onclick="setEmitterMode('AUTO')" id="btn-AUTO" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all duration-150 bg-sky-600 text-white border-sky-500 shadow-sm">
+          Auto Battlefield
+        </button>
+        <button onclick="setEmitterMode('Hostile_OcuSync')" id="btn-Hostile_OcuSync" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all duration-150 bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-750">
+          DJI OcuSync (OFDM)
+        </button>
+        <button onclick="setEmitterMode('Hostile_MAVLink')" id="btn-Hostile_MAVLink" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all duration-150 bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-750">
+          MAVLink FHSS
+        </button>
+        <button onclick="setEmitterMode('Jammer')" id="btn-Jammer" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all duration-150 bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-750">
+          EW Jammer (Chirp)
+        </button>
+        <button onclick="setEmitterMode('Friendly_Comms')" id="btn-Friendly_Comms" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all duration-150 bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-750">
+          Friendly QPSK
+        </button>
+        <button onclick="setEmitterMode('Background_Noise')" id="btn-Background_Noise" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all duration-150 bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-750">
+          Thermal Noise
+        </button>
+      </div>
+    </header>
+
+    <!-- Master Interdiction Tactical Banner -->
+    <section id="alertBanner" class="border border-rose-500/50 bg-rose-500/10 rounded-xl p-3.5 flex flex-wrap items-center justify-between gap-3 shadow-[0_0_20px_rgba(244,63,94,0.15)]">
+      <div class="flex items-center gap-3">
+        <span id="alertPill" class="px-2.5 py-1 rounded text-xs font-mono font-bold bg-rose-600 text-white animate-pulse">
+          INTERDICTION ACTIVE
+        </span>
+        <span id="alertTitle" class="text-sm font-bold font-mono text-rose-300">
+          [!!!] HOSTILE RF EMITTER DETECTED - INITIATING PHI-GUARD INTERDICTION !!!
+        </span>
+      </div>
+      <div class="flex items-center gap-4 text-xs font-mono text-slate-300">
+        <span>Inference: <strong id="latencyReadout" class="text-emerald-400">0.58 ms</strong></span>
+        <span>Throughput: <strong id="throughputReadout" class="text-sky-400">1,730 Hz</strong></span>
+        <span>UDP #14611: <strong class="text-emerald-400">STREAMING</strong></span>
+      </div>
+    </section>
+
+    <!-- Main Scientific Grid -->
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-3.5">
+
+      <!-- Left 8 Columns: Scopes, Constellation, PSD & Waterfall -->
+      <div class="lg:col-span-8 space-y-3.5">
+
+        <!-- Row 1: Baseband I/Q Oscilloscope + Phase Constellation -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+
+          <!-- Panel 1: Time-Domain Baseband I/Q Scope -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-3.5 space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-semibold text-slate-200">1. Raw Complex Baseband I/Q (2 &times; 1024)</span>
+              <span class="text-xs font-mono text-slate-400">
+                <span class="text-sky-400">&bull; In-Phase (I)</span> &nbsp;
+                <span class="text-amber-400">&bull; Quadrature (Q)</span>
+              </span>
+            </div>
+            <div class="relative rounded-lg overflow-hidden border border-slate-800 bg-slate-950">
+              <canvas id="scopeIQ" width="450" height="155" class="w-full h-[155px] block"></canvas>
+            </div>
+            <div class="flex justify-between text-[11px] font-mono text-slate-400">
+              <span id="iqRmsText">RMS: 0.707 V</span>
+              <span id="iqSamplingText">f_s = 1.00 MS/s | 1024 Samples</span>
+            </div>
+          </div>
+
+          <!-- Panel 2: Polar I/Q Constellation Scope -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-3.5 space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-semibold text-slate-200">2. I/Q Phase-Space Constellation</span>
+              <span id="constellationBadge" class="text-[11px] font-mono text-slate-400">OFDM + ZC Sync Cloud</span>
+            </div>
+            <div class="relative rounded-lg overflow-hidden border border-slate-800 bg-slate-950 flex items-center justify-center">
+              <canvas id="scopeConst" width="450" height="155" class="w-full h-[155px] block"></canvas>
+            </div>
+            <div class="flex justify-between text-[11px] font-mono text-slate-400">
+              <span id="paprText">PAPR: 6.42 dB</span>
+              <span id="entropyText">Spectral Entropy: 6.84 bits</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 2: Power Spectral Density (PSD) & Waterfall Spectrogram -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3.5 space-y-2">
+          <div class="flex flex-wrap justify-between items-center gap-2">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-semibold text-slate-200">3. Power Spectral Density (PSD) &amp; Spectrogram Waterfall</span>
+              <span class="text-[11px] font-mono text-sky-400">2.437 GHz &plusmn; 500 kHz</span>
+            </div>
+            <div class="flex items-center gap-3 text-xs font-mono">
+              <span class="text-slate-400">SNR: <strong id="snrValText" class="text-white">+12 dB</strong></span>
+              <input type="range" id="snrRange" min="-10" max="20" value="12" step="1"
+                     class="w-28 accent-sky-500 cursor-pointer"
+                     oninput="onSnrChange(this.value)" />
+            </div>
+          </div>
+
+          <!-- PSD Bar Scope -->
+          <div class="relative rounded-lg overflow-hidden border border-slate-800 bg-slate-950">
+            <canvas id="scopePSD" width="880" height="120" class="w-full h-[120px] block"></canvas>
+          </div>
+
+          <!-- Waterfall Spectrogram -->
+          <div class="relative rounded-lg overflow-hidden border border-slate-800 bg-slate-950">
+            <canvas id="scopeWaterfall" width="880" height="85" class="w-full h-[85px] block"></canvas>
+          </div>
+
+          <div class="flex justify-between text-[11px] font-mono text-slate-400 pt-0.5">
+            <span id="psdPeakFreqText">Carrier Peak: +400.0 kHz</span>
+            <span id="psdRssiText">Estimated RSSI: -44.8 dBm</span>
+            <span>Bandwidth: 1.00 MHz</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right 4 Columns: 1D-CNN Softmax + PHI-GUARD Intercept Radar + PACE Ledger -->
+      <div class="lg:col-span-4 space-y-3.5">
+
+        <!-- 1D-CNN Softmax Probabilities -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3.5 space-y-3">
+          <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+            <span class="text-xs font-semibold text-slate-200">4. 1D-CNN Softmax Classification</span>
+            <span id="modelAccuracyBadge" class="text-[11px] font-mono text-emerald-400 font-semibold">
+              Test Acc: 100.00%
+            </span>
+          </div>
+          <div id="probBarsList" class="space-y-2.5">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- PHI-GUARD Sovereign Intercept Radar -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3.5 space-y-2.5">
+          <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+            <span class="text-xs font-semibold text-slate-200">5. PHI-GUARD C4I Intercept Radar (600m)</span>
+            <span id="interceptorStateBadge" class="text-[11px] font-mono font-bold text-rose-400">
+              S6_TOW_CONTAINMENT
+            </span>
+          </div>
+          <div class="relative rounded-lg overflow-hidden border border-slate-800 bg-slate-950 flex items-center justify-center">
+            <canvas id="radarCanvas" width="340" height="205" class="w-full h-[205px] block"></canvas>
+          </div>
+          <div class="flex justify-between text-[11px] font-mono text-slate-400">
+            <span class="text-sky-400">&bull; Veh 1: Sovereign Interceptor</span>
+            <span class="text-rose-400">&bull; Veh 2: Rogue Intruder</span>
+          </div>
+        </div>
+
+        <!-- UK PACE SHA-256 Cryptographic Chain-of-Custody -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3.5 space-y-2">
+          <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+            <span class="text-xs font-semibold text-slate-200">6. UK PACE SHA-256 Forensic Audit Chain</span>
+            <span class="text-[11px] font-mono text-emerald-400 font-semibold">HMAC VALID</span>
+          </div>
+          <div id="paceChainContainer" class="space-y-1.5 text-[11px] font-mono text-slate-400 max-h-24 overflow-hidden">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Institutional Footer -->
+    <footer class="bg-slate-900/80 border border-slate-800 rounded-xl p-3 text-center text-xs text-slate-400 space-y-1">
+      <div class="flex flex-wrap items-center justify-center gap-2">
+        <span class="font-semibold text-slate-200">PHI-RF-CLASSIFIER v1.0.0 (TRL-4 / Edge-of-5 Sovereign SIGINT)</span>
+        <span class="text-slate-600">&bull;</span>
+        <a href="https://github.com/Sm-bello/PHI-sigint-fingerprint" target="_blank" class="text-sky-400 hover:underline">
+          github.com/Sm-bello/PHI-sigint-fingerprint
+        </a>
+      </div>
+      <p class="text-[11px] text-slate-400">
+        Developed with the visionary leadership and technical sponsorship of
+        <strong class="text-slate-300">DIMASA (Digital Intelligence Maintenance for Aircraft Systems in Africa)</strong>
+        &bull;
+        <strong class="text-slate-300">Physics Hybrid Integrity Lab</strong>
+      </p>
+    </footer>
+
+  </div>
+
+  <!-- JavaScript Orchestration Engine -->
+  <script>
+    const CLASSES = ["Background_Noise", "Friendly_Comms", "Hostile_MAVLink", "Hostile_OcuSync", "Jammer"];
+    let currentMode = "AUTO";
+    let activeClass = "Hostile_OcuSync";
+    let currentSnr = 12.0;
+    let liveBackendActive = false;
+    let blockHeight = 42;
+    let tPhase = 0;
+    let radarSweep = 0;
+
+    // Kinematic positions for Radar
+    let rogueAngle = 0.85;
+    let rogueDist = 0.72;
+    let intDist = 0.15;
+    let intAngle = 0.85;
+
+    // Waterfall buffer setup
+    const wfCanvas = document.getElementById("scopeWaterfall");
+    const ctxWF = wfCanvas.getContext("2d");
+    ctxWF.fillStyle = "#020617";
+    ctxWF.fillRect(0, 0, wfCanvas.width, wfCanvas.height);
+
+    function setEmitterMode(mode) {
+      currentMode = mode;
+      if (mode !== "AUTO") activeClass = mode;
+
+      ["AUTO", ...CLASSES].forEach(id => {
+        const btn = document.getElementById("btn-" + id);
+        if (!btn) return;
+        if (id === mode) {
+          btn.className = "px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all duration-150 bg-sky-600 text-white border-sky-500 shadow-sm";
+        } else {
+          btn.className = "px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all duration-150 bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-750";
+        }
+      });
+
+      // Notify Python backend if active
+      if (liveBackendActive) {
+        fetch("/api/control", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({
+            emitter_override: (mode === "AUTO" ? null : mode),
+            snr_db: currentSnr
+          })
+        }).catch(() => {});
+      }
+    }
+
+    function onSnrChange(val) {
+      currentSnr = parseFloat(val);
+      document.getElementById("snrValText").textContent = (currentSnr >= 0 ? "+" : "") + currentSnr + " dB";
+      if (liveBackendActive) {
+        fetch("/api/control", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({ snr_db: currentSnr })
+        }).catch(() => {});
+      }
+    }
+
+    // Auto-cycling sequence when in AUTO mode (fallback or standalone)
+    const autoCycleList = ["Hostile_OcuSync", "Hostile_MAVLink", "Jammer", "Friendly_Comms", "Background_Noise"];
+    let cycleIndex = 0;
+    setInterval(() => {
+      if (currentMode === "AUTO" && !liveBackendActive) {
+        cycleIndex = (cycleIndex + 1) % autoCycleList.length;
+        activeClass = autoCycleList[cycleIndex];
+        blockHeight++;
+      }
+    }, 3200);
+
+    // Live Telemetry Poller (connects to Python backend app.py)
+    async function pollLiveTelemetry() {
+      try {
+        const resp = await fetch("/api/telemetry", { cache: "no-store" });
+        if (resp.ok) {
+          const data = await resp.json();
+          liveBackendActive = true;
+          document.getElementById("backendBadge").textContent = "PYTORCH LIVE (CPU)";
+          document.getElementById("backendBadge").className = "text-[11px] font-mono font-semibold px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800";
+          updateWithBackendData(data);
+        } else {
+          liveBackendActive = false;
+        }
+      } catch (e) {
+        liveBackendActive = false;
+        document.getElementById("backendBadge").textContent = "STANDALONE SIMULATOR";
+        document.getElementById("backendBadge").className = "text-[11px] font-mono font-semibold px-2 py-0.5 rounded bg-sky-950 text-sky-400 border border-sky-800";
+      }
+    }
+
+    setInterval(pollLiveTelemetry, 150);
+
+    function updateWithBackendData(data) {
+      activeClass = data.predicted_class || activeClass;
+      blockHeight = data.bridge_event?.pace_block_height || blockHeight;
+
+      // Update latencies & statistics
+      if (data.latency_ms) {
+        document.getElementById("latencyReadout").textContent = data.latency_ms.toFixed(2) + " ms";
+        document.getElementById("throughputReadout").textContent = Math.round(1000 / data.latency_ms).toLocaleString() + " Hz";
+      }
+      if (data.spectral) {
+        document.getElementById("psdPeakFreqText").textContent = `Carrier Peak: ${data.spectral.freq_offset_khz >= 0 ? '+' : ''}${data.spectral.freq_offset_khz.toFixed(1)} kHz`;
+        document.getElementById("psdRssiText").textContent = `Estimated RSSI: ${data.spectral.rssi_dbm.toFixed(1)} dBm`;
+        document.getElementById("paprText").textContent = `PAPR: ${data.spectral.papr_db.toFixed(2)} dB`;
+        document.getElementById("entropyText").textContent = `Spectral Entropy: ${data.spectral.spectral_entropy.toFixed(2)} bits`;
+      }
+
+      renderSoftmaxBars(data.probabilities || {});
+      updateAlertAndLedger(data);
+    }
+
+    function renderSoftmaxBars(probs) {
+      if (!probs || Object.keys(probs).length === 0) {
+        probs = {
+          "Background_Noise": 0.001,
+          "Friendly_Comms": 0.001,
+          "Hostile_MAVLink": 0.001,
+          "Hostile_OcuSync": 0.001,
+          "Jammer": 0.001
+        };
+        const p = currentSnr < -5 ? 0.72 : 0.995;
+        probs[activeClass] = p;
+      }
+
+      const container = document.getElementById("probBarsList");
+      container.innerHTML = CLASSES.map(c => {
+        const val = (probs[c] || 0.0) * 100;
+        const isCurrent = (c === activeClass);
+        const isHostile = ["Hostile_MAVLink", "Hostile_OcuSync", "Jammer"].includes(c);
+        const barColor = isCurrent ? (isHostile ? "bg-rose-500" : "bg-emerald-500") : "bg-slate-700";
+        const textColor = isCurrent ? "text-white font-bold" : "text-slate-400";
+        return `
+          <div class="space-y-1">
+            <div class="flex justify-between text-xs font-mono">
+              <span class="${textColor}">${c}</span>
+              <span class="${textColor}">${val.toFixed(1)}%</span>
+            </div>
+            <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+              <div class="h-full ${barColor} transition-all duration-150" style="width: ${Math.max(2, val)}%"></div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function updateAlertAndLedger(data) {
+      const banner = document.getElementById("alertBanner");
+      const title = document.getElementById("alertTitle");
+      const pill = document.getElementById("alertPill");
+      const radarState = document.getElementById("interceptorStateBadge");
+      const constBadge = document.getElementById("constellationBadge");
+      const pulseDot = document.getElementById("livePulseDot");
+
+      const isHostile = ["Hostile_MAVLink", "Hostile_OcuSync", "Jammer"].includes(activeClass);
+      const conf = data?.confidence || (currentSnr < -5 ? 0.72 : 0.995);
+
+      if (activeClass === "Hostile_OcuSync") {
+        pulseDot.className = "w-3.5 h-3.5 rounded-full bg-rose-500 animate-ping shadow-[0_0_12px_#f43f5e]";
+        banner.className = "border border-rose-500/50 bg-rose-500/10 rounded-xl p-3.5 flex flex-wrap items-center justify-between gap-3 shadow-[0_0_20px_rgba(244,63,94,0.15)]";
+        pill.className = "px-2.5 py-1 rounded text-xs font-mono font-bold bg-rose-600 text-white animate-pulse";
+        pill.textContent = "INTERDICTION ACTIVE";
+        title.className = "text-sm font-bold font-mono text-rose-300";
+        title.textContent = `[!!!] HOSTILE RF EMITTER DETECTED (Hostile_OcuSync) - INITIATING GPS_MEACONING_TOW !!!`;
+        radarState.textContent = "S6_TOW_CONTAINMENT";
+        radarState.className = "text-[11px] font-mono font-bold text-rose-400";
+        constBadge.textContent = "64-Subcarrier OFDM + ZC Sync";
+      } else if (activeClass === "Hostile_MAVLink") {
+        pulseDot.className = "w-3.5 h-3.5 rounded-full bg-rose-500 animate-ping shadow-[0_0_12px_#f43f5e]";
+        banner.className = "border border-rose-500/50 bg-rose-500/10 rounded-xl p-3.5 flex flex-wrap items-center justify-between gap-3 shadow-[0_0_20px_rgba(244,63,94,0.15)]";
+        pill.className = "px-2.5 py-1 rounded text-xs font-mono font-bold bg-rose-600 text-white animate-pulse";
+        pill.textContent = "INTERDICTION ACTIVE";
+        title.className = "text-sm font-bold font-mono text-rose-300";
+        title.textContent = `[!!!] HOSTILE RF EMITTER DETECTED (Hostile_MAVLink) - INITIATING MAVLINK_GUIDED_OVERRIDE !!!`;
+        radarState.textContent = "S5_SCRAMBLE_ACTIVE";
+        radarState.className = "text-[11px] font-mono font-bold text-rose-400";
+        constBadge.textContent = "Continuous-Phase GFSK FHSS";
+      } else if (activeClass === "Jammer") {
+        pulseDot.className = "w-3.5 h-3.5 rounded-full bg-amber-500 animate-ping shadow-[0_0_12px_#f59e0b]";
+        banner.className = "border border-amber-500/50 bg-amber-500/10 rounded-xl p-3.5 flex flex-wrap items-center justify-between gap-3 shadow-[0_0_20px_rgba(245,158,11,0.15)]";
+        pill.className = "px-2.5 py-1 rounded text-xs font-mono font-bold bg-amber-600 text-white animate-pulse";
+        pill.textContent = "ECCM ENGAGED";
+        title.className = "text-sm font-bold font-mono text-amber-300";
+        title.textContent = `[!!!] HIGH-POWER EW JAMMER DETECTED - ACTIVATING ECCM_NULL_STEERING_AGILITY !!!`;
+        radarState.textContent = "S2_ECCM_DEFENSE";
+        radarState.className = "text-[11px] font-mono font-bold text-amber-400";
+        constBadge.textContent = "SSPA Saturated LFM Chirp";
+      } else {
+        pulseDot.className = "w-3.5 h-3.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_12px_#10b981]";
+        banner.className = "border border-emerald-500/50 bg-emerald-500/10 rounded-xl p-3.5 flex flex-wrap items-center justify-between gap-3 shadow-[0_0_20px_rgba(16,185,129,0.15)]";
+        pill.className = "px-2.5 py-1 rounded text-xs font-mono font-bold bg-emerald-600 text-white";
+        pill.textContent = "SPECTRUM SAFE";
+        title.className = "text-sm font-bold font-mono text-emerald-300";
+        title.textContent = `SPECTRUM NOMINAL (${activeClass}) — SOVEREIGN INTERCEPTOR IN S0 STANDBY (98.6% ENERGY SAVED)`;
+        radarState.textContent = "S0_IDLE_MONITORING";
+        radarState.className = "text-[11px] font-mono font-bold text-emerald-400";
+        constBadge.textContent = (activeClass === "Friendly_Comms" ? "4-Cluster QPSK Constellation" : "Gaussian AWGN Noise Floor");
+      }
+
+      // Append PACE hash entry
+      const hashStr = data?.bridge_event?.pace_latest_hash || Array.from({length: 24}, () => Math.floor(Math.random()*16).toString(16)).join("");
+      const container = document.getElementById("paceChainContainer");
+      const row = document.createElement("div");
+      row.className = "flex items-center justify-between truncate border-b border-slate-800/60 pb-1";
+      row.innerHTML = `
+        <span class="text-white font-bold">#00${blockHeight}</span>
+        <span class="${isHostile ? 'text-rose-400' : 'text-emerald-400'}">${activeClass}</span>
+        <span class="text-slate-500">${(conf * 100).toFixed(1)}%</span>
+        <span class="text-slate-400 font-mono">${hashStr.substring(0, 16)}...</span>
+      `;
+      container.prepend(row);
+      while (container.children.length > 3) container.removeChild(container.lastChild);
+    }
+
+    // Main 60 FPS Canvas Rendering Loop
+    function renderCanvasFrames() {
+      tPhase += 0.14;
+      radarSweep += 0.035;
+
+      const noiseAmp = Math.pow(10, -currentSnr / 20) * 0.35;
+
+      // -------------------------------------------------------------
+      // 1. Time-Domain Baseband I/Q Scope
+      // -------------------------------------------------------------
+      const cIQ = document.getElementById("scopeIQ");
+      const ctx1 = cIQ.getContext("2d");
+      const W1 = cIQ.width, H1 = cIQ.height;
+      ctx1.clearRect(0, 0, W1, H1);
+
+      // Center reference line
+      ctx1.strokeStyle = "rgba(51, 65, 85, 0.4)";
+      ctx1.lineWidth = 1;
+      ctx1.beginPath();
+      ctx1.moveTo(0, H1 / 2); ctx1.lineTo(W1, H1 / 2);
+      ctx1.stroke();
+
+      for (let ch = 0; ch < 2; ch++) {
+        ctx1.strokeStyle = (ch === 0 ? "#38bdf8" : "#fbbf24");
+        ctx1.lineWidth = 1.5;
+        ctx1.beginPath();
+
+        for (let x = 0; x < W1; x++) {
+          const t = (x / W1) * 14 + tPhase;
+          let v = (Math.random() - 0.5) * noiseAmp;
+
+          if (activeClass === "Friendly_Comms") {
+            const sym = Math.floor(t * 1.5) % 2 === 0 ? 1 : -1;
+            v += 0.52 * Math.cos(t * 4 + ch * 1.57 + sym * 0.78);
+          } else if (activeClass === "Hostile_MAVLink") {
+            const f = (x > W1 / 2 ? 8.5 : 3.5);
+            v += 0.75 * Math.cos(t * f + ch * 1.57);
+          } else if (activeClass === "Hostile_OcuSync") {
+            v += 0.35 * Math.sin(t * 3 + ch) + 0.30 * Math.cos(t * 8 - ch) + 0.25 * Math.sin(t * 15);
+          } else if (activeClass === "Jammer") {
+            const chirp = Math.sin(t * t * 0.45 + ch * 1.5);
+            v += Math.tanh(1.6 * (0.8 * chirp + (Math.random() - 0.5) * 0.8));
+          }
+
+          const y = H1 / 2 - v * (H1 * 0.42);
+          if (x === 0) ctx1.moveTo(x, y); else ctx1.lineTo(x, y);
+        }
+        ctx1.stroke();
+      }
+
+      // -------------------------------------------------------------
+      // 2. Polar I/Q Constellation Scope
+      // -------------------------------------------------------------
+      const cConst = document.getElementById("scopeConst");
+      const ctx2 = cConst.getContext("2d");
+      const W2 = cConst.width, H2 = cConst.height;
+      const cx = W2 / 2, cy = H2 / 2, radius = 56;
+      ctx2.clearRect(0, 0, W2, H2);
+
+      // Grid crosshairs & circles
+      ctx2.strokeStyle = "rgba(51, 65, 85, 0.4)";
+      ctx2.lineWidth = 1;
+      ctx2.beginPath();
+      ctx2.moveTo(0, cy); ctx2.lineTo(W2, cy);
+      ctx2.moveTo(cx, 0); ctx2.lineTo(cx, H2);
+      ctx2.arc(cx, cy, radius, 0, Math.PI * 2);
+      ctx2.stroke();
+
+      const isHostile = ["Hostile_MAVLink", "Hostile_OcuSync", "Jammer"].includes(activeClass);
+      ctx2.fillStyle = isHostile ? "#f43f5e" : "#38bdf8";
+
+      const numDots = 140;
+      for (let i = 0; i < numDots; i++) {
+        let I = 0, Q = 0;
+        if (activeClass === "Friendly_Comms") {
+          I = (i % 2 === 0 ? 0.70 : -0.70) + (Math.random() - 0.5) * noiseAmp;
+          Q = (i % 4 < 2 ? 0.70 : -0.70) + (Math.random() - 0.5) * noiseAmp;
+        } else if (activeClass === "Hostile_MAVLink") {
+          const a = (i / numDots) * Math.PI * 2 + tPhase;
+          I = 0.85 * Math.cos(a) + (Math.random() - 0.5) * noiseAmp;
+          Q = 0.85 * Math.sin(a) + (Math.random() - 0.5) * noiseAmp;
+        } else if (activeClass === "Hostile_OcuSync") {
+          const gI = ((i % 8) - 3.5) / 3.5;
+          const gQ = (Math.floor(i / 8) % 8 - 3.5) / 3.5;
+          I = gI * 0.85 + (Math.random() - 0.5) * noiseAmp;
+          Q = gQ * 0.85 + (Math.random() - 0.5) * noiseAmp;
+        } else if (activeClass === "Jammer") {
+          const a = Math.random() * Math.PI * 2;
+          const r = 0.95 + (Math.random() - 0.5) * 0.2;
+          I = r * Math.cos(a); Q = r * Math.sin(a);
+        } else {
+          I = (Math.random() - 0.5) * 0.35;
+          Q = (Math.random() - 0.5) * 0.35;
+        }
+        ctx2.fillRect(cx + I * radius - 1.5, cy - Q * radius - 1.5, 3, 3);
+      }
+
+      // -------------------------------------------------------------
+      // 3. Power Spectral Density (PSD) Bars & Spectrogram Waterfall
+      // -------------------------------------------------------------
+      const cPSD = document.getElementById("scopePSD");
+      const ctx3 = cPSD.getContext("2d");
+      const W3 = cPSD.width, H3 = cPSD.height;
+      ctx3.clearRect(0, 0, W3, H3);
+
+      const nBins = 64;
+      const bWidth = (W3 / nBins) - 2;
+
+      // Scroll waterfall downward by 2 pixels
+      const wfImg = ctxWF.getImageData(0, 0, wfCanvas.width, wfCanvas.height - 2);
+      ctxWF.putImageData(wfImg, 0, 2);
+
+      for (let b = 0; b < nBins; b++) {
+        const normFreq = (b / nBins) - 0.5; // -0.5 to +0.5
+        let pwr = 0.12 + Math.random() * 0.08 + noiseAmp * 0.25;
+
+        if (activeClass === "Friendly_Comms" && Math.abs(normFreq - 0.20) < 0.05) {
+          pwr = 0.65 + Math.random() * 0.08;
+        } else if (activeClass === "Hostile_MAVLink") {
+          const hc = (Math.floor(tPhase) % 2 === 0 ? -0.30 : -0.20);
+          if (Math.abs(normFreq - hc) < 0.06) pwr = 0.88 + Math.random() * 0.08;
+        } else if (activeClass === "Hostile_OcuSync" && normFreq > 0.10 && normFreq < 0.45) {
+          pwr = 0.90 + Math.random() * 0.08;
+        } else if (activeClass === "Jammer") {
+          pwr = 0.82 + Math.random() * 0.15;
+        }
+
+        const bHeight = Math.min(H3 - 6, pwr * (H3 - 10));
+        ctx3.fillStyle = (pwr > 0.62)
+          ? (isHostile ? "#f43f5e" : "#10b981")
+          : "#0284c7";
+        ctx3.fillRect(b * (bWidth + 2), H3 - bHeight, bWidth, bHeight);
+
+        // Draw top line of waterfall spectrogram
+        const intVal = Math.min(255, Math.floor(pwr * 255));
+        ctxWF.fillStyle = (pwr > 0.65)
+          ? `rgb(${intVal}, ${Math.floor(intVal * 0.2)}, ${Math.floor(intVal * 0.4)})`
+          : `rgb(10, ${Math.floor(intVal * 0.7)}, ${intVal})`;
+        ctxWF.fillRect(b * (bWidth + 2), 0, bWidth + 2, 2);
+      }
+
+      // -------------------------------------------------------------
+      // 4. PHI-GUARD C4I Circular Radar Scope
+      // -------------------------------------------------------------
+      const cRad = document.getElementById("radarCanvas");
+      const ctxR = cRad.getContext("2d");
+      const WR = cRad.width, HR = cRad.height;
+      const rcx = WR / 2, rcy = HR / 2, rMax = 85;
+      ctxR.clearRect(0, 0, WR, HR);
+
+      // Radar rings & axes
+      ctxR.strokeStyle = "rgba(16, 185, 129, 0.25)";
+      ctxR.lineWidth = 1;
+      [0.33, 0.66, 1.0].forEach(f => {
+        ctxR.beginPath(); ctxR.arc(rcx, rcy, rMax * f, 0, Math.PI * 2); ctxR.stroke();
+      });
+      ctxR.beginPath(); ctxR.moveTo(rcx - rMax, rcy); ctxR.lineTo(rcx + rMax, rcy); ctxR.stroke();
+      ctxR.beginPath(); ctxR.moveTo(rcx, rcy - rMax); ctxR.lineTo(rcx, rcy + rMax); ctxR.stroke();
+
+      // Radar rotating sweep beam
+      ctxR.strokeStyle = "rgba(16, 185, 129, 0.5)";
+      ctxR.lineWidth = 1.5;
+      ctxR.beginPath();
+      ctxR.moveTo(rcx, rcy);
+      ctxR.lineTo(rcx + rMax * Math.cos(radarSweep), rcy + rMax * Math.sin(radarSweep));
+      ctxR.stroke();
+
+      // Interceptor pursuit dynamics
+      if (isHostile) {
+        rogueAngle += 0.015;
+        rogueDist = 0.58;
+        intDist += (rogueDist - intDist) * 0.08;
+        intAngle += (rogueAngle - intAngle) * 0.12;
+
+        // Vehicle 2: Rogue Threat (Red)
+        const rx = rcx + rMax * rogueDist * Math.cos(rogueAngle);
+        const ry = rcy + rMax * rogueDist * Math.sin(rogueAngle);
+        ctxR.fillStyle = "#f43f5e";
+        ctxR.beginPath(); ctxR.arc(rx, ry, 5, 0, Math.PI * 2); ctxR.fill();
+        ctxR.strokeStyle = "rgba(244, 63, 94, 0.5)";
+        ctxR.beginPath(); ctxR.arc(rx, ry, 9, 0, Math.PI * 2); ctxR.stroke();
+      } else {
+        intDist *= 0.94; // Returns to rooftop helipad
+      }
+
+      // Vehicle 1: Sovereign Defender (Blue)
+      const ix = rcx + rMax * intDist * Math.cos(intAngle);
+      const iy = rcy + rMax * intDist * Math.sin(intAngle);
+      ctxR.fillStyle = "#38bdf8";
+      ctxR.beginPath(); ctxR.arc(ix, iy, 5, 0, Math.PI * 2); ctxR.fill();
+      ctxR.strokeStyle = "rgba(56, 189, 248, 0.5)";
+      ctxR.beginPath(); ctxR.arc(ix, iy, 9, 0, Math.PI * 2); ctxR.stroke();
+
+      requestAnimationFrame(renderCanvasFrames);
+    }
+
+    // Initialize displays
+    renderSoftmaxBars();
+    updateAlertAndLedger(null);
+    renderCanvasFrames();
+  </script>
+</body>
+</html>
