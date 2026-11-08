@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 300px;
+      height: 300px;
+      overflow: hidden;
+      background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center p-3 select-none">
+  <div class="relative w-[280px] h-[280px] rounded-2xl border-2 border-sky-500/40 bg-slate-950/90 shadow-[0_0_25px_rgba(14,165,233,0.25)] flex flex-col items-center justify-between p-3.5 overflow-hidden">
+
+    <!-- Glowing Background Radar Reticle -->
+    <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
+      <div class="w-56 h-56 rounded-full border border-sky-400"></div>
+      <div class="absolute w-40 h-40 rounded-full border border-sky-400"></div>
+      <div class="absolute w-24 h-24 rounded-full border border-sky-400"></div>
+      <div class="absolute w-full h-[1px] bg-sky-400"></div>
+      <div class="absolute h-full w-[1px] bg-sky-400"></div>
+    </div>
+
+    <!-- Top Tagline -->
+    <div class="relative z-10 flex items-center justify-between w-full">
+      <span class="text-[9px] font-mono tracking-widest text-sky-400 font-bold uppercase bg-sky-950/80 px-2 py-0.5 rounded border border-sky-800/60">
+        PHI-LAB &bull; TRL-4
+      </span>
+      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]"></span>
+    </div>
+
+    <!-- Center Icon & Logo Graphic -->
+    <div class="relative z-10 flex flex-col items-center justify-center text-center my-auto">
+      <!-- Radar Sweep Antenna Icon -->
+      <div class="relative w-20 h-20 rounded-full border-2 border-sky-400/80 flex items-center justify-center shadow-[0_0_18px_rgba(56,189,248,0.4)] bg-slate-900/80 mb-2">
+        <!-- Crosshairs -->
+        <div class="absolute w-full h-[1px] bg-sky-400/40"></div>
+        <div class="absolute h-full w-[1px] bg-sky-400/40"></div>
+        <!-- Center Target Dot -->
+        <div class="w-3.5 h-3.5 rounded-full bg-sky-400 shadow-[0_0_10px_#38bdf8]"></div>
+        <!-- Rogue Blip Red -->
+        <div class="absolute top-3 right-4 w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_8px_#f43f5e] animate-ping"></div>
+        <!-- Interceptor Blip Blue -->
+        <div class="absolute bottom-4 left-4 w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]"></div>
+      </div>
+
+      <h1 class="text-xl font-black tracking-wider text-white flex items-center gap-1">
+        <span class="text-sky-400">PHI</span><span class="text-slate-300">-LAB</span>
+      </h1>
+      <p class="text-[10px] font-mono tracking-widest text-slate-400 uppercase font-semibold">
+        Sovereign AI SIGINT
+      </p>
+    </div>
+
+    <!-- Bottom Attribution -->
+    <div class="relative z-10 w-full pt-1 border-t border-slate-800/80 flex justify-between items-center text-[8px] font-mono text-slate-400">
+      <span class="text-slate-400">DIMASA &times; PHI-LAB</span>
+      <span class="text-emerald-400 font-bold">100% P_d</span>
+    </div>
+
+  </div>
+</body>
+</html>

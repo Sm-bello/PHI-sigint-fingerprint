@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 1200px;
+      height: 640px;
+      overflow: hidden;
+      background: radial-gradient(circle at 75% 30%, #0f172a 0%, #020617 85%);
+      color: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .grid-bg {
+      background-image: linear-gradient(rgba(30, 41, 59, 0.35) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(30, 41, 59, 0.35) 1px, transparent 1px);
+      background-size: 30px 30px;
+    }
+  </style>
+</head>
+<body class="p-8 flex items-center justify-center select-none grid-bg">
+  <div class="w-full h-full border-2 border-slate-800 rounded-2xl bg-slate-950/85 backdrop-blur p-8 flex flex-col justify-between shadow-[0_0_50px_rgba(2,6,23,0.9)] relative overflow-hidden">
+
+    <!-- Ambient Glowing Highlights -->
+    <div class="absolute -top-24 -right-24 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-rose-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <!-- Top Badge Row -->
+    <div class="relative z-10 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider bg-sky-950 text-sky-400 border border-sky-800">
+          UK DEFENCE CHALLENGE &bull; HMGCC ALIGNED
+        </span>
+        <span class="px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider bg-emerald-950 text-emerald-400 border border-emerald-800">
+          TRL-4 SOVEREIGN TESTBED
+        </span>
+        <span class="px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider bg-rose-950 text-rose-400 border border-rose-800 animate-pulse">
+          INTERDICTION AUTOMATED
+        </span>
+      </div>
+      <div class="flex items-center gap-2 font-mono text-xs text-slate-400">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+        <span class="text-slate-300 font-semibold">UK PACE SHA-256 VERIFIED</span>
+      </div>
+    </div>
+
+    <!-- Center Content: Left Typography + Right Tactical Visualization -->
+    <div class="relative z-10 grid grid-cols-12 gap-8 items-center my-auto">
+
+      <!-- Left 7 Cols: Headline, Subhead & Key Performance Indicators -->
+      <div class="col-span-7 space-y-4">
+        <div class="space-y-2">
+          <div class="text-xs font-mono tracking-widest uppercase text-sky-400 font-bold flex items-center gap-2">
+            <span>PHYSICAL-LAYER DEEP LEARNING (PHY)</span>
+            <span class="text-slate-600">&bull;</span>
+            <span>SUB-MILLISECOND INFERENCE</span>
+          </div>
+          <h1 class="text-4xl font-black tracking-tight text-white leading-tight">
+            AI SIGINT &amp; HOSTILE RF EMITTER IDENTIFICATION
+          </h1>
+          <p class="text-slate-300 text-sm leading-relaxed">
+            Real-time 1D-CNN classification of rogue UAV C2 links (DJI OcuSync OFDM, MAVLink GFSK FHSS, and Electronic Warfare Jammers) directly from raw 2&times;1024 baseband I/Q waveforms in crowded battlefield spectrums.
+          </p>
+        </div>
+
+        <!-- Empirical KPI Strip -->
+        <div class="grid grid-cols-4 gap-2 pt-2">
+          <div class="bg-slate-900/90 border border-slate-800 rounded-lg p-2.5 text-center">
+            <div class="text-lg font-mono font-black text-emerald-400">100.0%</div>
+            <div class="text-[10px] font-mono text-slate-400 uppercase tracking-wider">Detection (P_d)</div>
+          </div>
+          <div class="bg-slate-900/90 border border-slate-800 rounded-lg p-2.5 text-center">
+            <div class="text-lg font-mono font-black text-emerald-400">0.0%</div>
+            <div class="text-[10px] font-mono text-slate-400 uppercase tracking-wider">False Alarm (FAR)</div>
+          </div>
+          <div class="bg-slate-900/90 border border-slate-800 rounded-lg p-2.5 text-center">
+            <div class="text-lg font-mono font-black text-sky-400">0.58 ms</div>
+            <div class="text-[10px] font-mono text-slate-400 uppercase tracking-wider">1D-CNN Latency</div>
+          </div>
+          <div class="bg-slate-900/90 border border-slate-800 rounded-lg p-2.5 text-center">
+            <div class="text-lg font-mono font-black text-amber-400">99.2%</div>
+            <div class="text-[10px] font-mono text-slate-400 uppercase tracking-wider">Acc at -5dB SNR</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right 5 Cols: Tactical Mini-Cockpit Card -->
+      <div class="col-span-5 bg-slate-900/90 border border-slate-800 rounded-xl p-4 space-y-3 shadow-xl">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+          <span class="text-xs font-semibold text-slate-200">PHI-GUARD C4I Scope &bull; 600m</span>
+          <span class="text-[10px] font-mono font-bold text-rose-400 bg-rose-950 px-2 py-0.5 rounded border border-rose-800">
+            S6_TOW_CONTAINMENT
+          </span>
+        </div>
+
+        <!-- Radar & Constellation Preview -->
+        <div class="grid grid-cols-2 gap-2">
+          <div class="relative h-28 bg-slate-950 rounded-lg border border-slate-800 flex items-center justify-center overflow-hidden">
+            <!-- Radar rings -->
+            <div class="w-20 h-20 rounded-full border border-emerald-500/30"></div>
+            <div class="absolute w-12 h-12 rounded-full border border-emerald-500/30"></div>
+            <!-- Target Blips -->
+            <div class="absolute top-6 right-6 w-2.5 h-2.5 rounded-full bg-rose-500 shadow-[0_0_8px_#f43f5e]"></div>
+            <div class="absolute bottom-6 left-7 w-2.5 h-2.5 rounded-full bg-sky-400 shadow-[0_0_8px_#38bdf8]"></div>
+            <span class="absolute bottom-1 right-1.5 text-[8px] font-mono text-slate-400">Radar 10Hz</span>
+          </div>
+
+          <div class="relative h-28 bg-slate-950 rounded-lg border border-slate-800 flex flex-col justify-between p-2">
+            <span class="text-[9px] font-mono text-slate-400">1D-CNN Softmax:</span>
+            <div class="space-y-1">
+              <div class="flex justify-between text-[9px] font-mono text-white">
+                <span>OcuSync</span><span class="text-rose-400 font-bold">100.0%</span>
+              </div>
+              <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                <div class="w-full h-full bg-rose-500"></div>
+              </div>
+              <div class="flex justify-between text-[9px] font-mono text-slate-400">
+                <span>MAVLink</span><span>0.0%</span>
+              </div>
+              <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                <div class="w-[2%] h-full bg-slate-600"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Alert Notification Box -->
+        <div class="border border-rose-500/60 bg-rose-500/10 rounded-lg p-2 text-center">
+          <div class="text-[11px] font-mono font-bold text-rose-300">
+            [!!!] HOSTILE RF EMITTER DETECTED - INITIATING INTERDICTION !!!
+          </div>
+          <div class="text-[9px] font-mono text-slate-400 mt-0.5">
+            Directive: GPS_MEACONING_TOW | PACE #0042 (sha256:0c7b5029...)
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Attribution Row -->
+    <div class="relative z-10 flex items-center justify-between border-t border-slate-800 pt-3 text-xs text-slate-400 font-mono">
+      <div class="flex items-center gap-3">
+        <span>Sponsorship &amp; Leadership:</span>
+        <strong class="text-slate-200">DIMASA (Digital Intelligence Maintenance for Aircraft Systems in Africa)</strong>
+        <span class="text-slate-600">&bull;</span>
+        <strong class="text-slate-200">Physics Hybrid Integrity Lab (PHI-Lab)</strong>
+      </div>
+      <div class="text-sky-400 font-semibold">
+        github.com/Sm-bello/PHI-sigint-fingerprint
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

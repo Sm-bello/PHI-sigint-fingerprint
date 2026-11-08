@@ -10,6 +10,8 @@
 
 Instead of relying on easily spoofed MAC addresses, Wi-Fi SSIDs, or unencrypted telemetry headers, `phi-rf-classifier` ingests raw **2-channel complex In-Phase and Quadrature ($I/Q$) baseband tensors** of shape `(batch, 2, 1024)` at $1\text{ MS/s}$. A compact **3-layer 1D Convolutional Neural Network (`RFClassifierCNN`)** extracts cyclostationary phase, modulation envelope, and spectral features in **sub-millisecond latency**, classifying the spectrum into 5 tactical regimes and automatically triggering **`PHI-GUARD` Sovereign Counter-UAS Interdiction** when a hostile emitter exceeds $80\%$ Softmax confidence.
 
+![PHI-RF-CLASSIFIER Real-Time Web C4I Tactical Dashboard](docs/images/c4i_tactical_dashboard_full.png)
+
 ---
 
 ## 🏗️ System Architecture & `PHI-GUARD` C4I Integration
